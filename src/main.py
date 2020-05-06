@@ -5,9 +5,27 @@ def getVoiceFreq():
     pass
 
 
-def fileIO():
+class fileIO():
     # restore or read dict from txt on sdcard
-    pass
+    def __init__(self):
+        try:
+            with open('data.txt', 'r') as f:
+                self.dict = eval(f.read())
+        except OSError:
+            self.dict = {'isfirst': True}
+            with open('data.txt', 'w') as f:
+                f.write(self.dict)
+
+    def isfirst(self):
+        # get info dict
+        return self.dict['isfirst']
+
+    def setInfo(self, isfirst=True):
+        # not first open
+        if not isfirst:
+            self.dict['isfirst'] = True
+            with open('data.txt', 'w') as f:
+                f.write(self.dict)
 
 
 class noipyBird:
@@ -23,10 +41,6 @@ class noipyBird:
 
     def tutorialGUI(self):
         # paint tutorial gui
-        pass
-
-    def rankGUI(self):
-        # draw rank list gui
         pass
 
     def main(self):
