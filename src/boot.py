@@ -18,6 +18,7 @@ else:
 if config_touchscreen_support:
     import touchscreen as ts
     ts.init(i2c)
+
 lv.init()
 
 disp_buf1 = lv.disp_buf_t()
@@ -45,8 +46,11 @@ if config_touchscreen_support:
 # lv.log_register_print_cb(lv_h.log)
 lv.log_register_print_cb(
     lambda level, path, line, msg: print('%s(%d): %s' % (path, line, msg)))
-
-
 ##################################
 # initialize mic
 # TODO
+
+##################################
+# auto enter main loop in main.py
+import main
+main.noipyBird()
