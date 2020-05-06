@@ -1,2 +1,2 @@
 # noipy-bird
-voice control minigame for maxi dock 
+voice controled minigame for maxi dock like flappy bird.
