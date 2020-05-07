@@ -20,7 +20,6 @@ if config_touchscreen_support:
     ts.init(i2c)
 
 lv.init()
-
 disp_buf1 = lv.disp_buf_t()
 buf1_1 = bytearray(320 * 10)
 lv.disp_buf_init(disp_buf1, buf1_1, None, len(buf1_1) // 4)
@@ -52,5 +51,3 @@ lv.log_register_print_cb(
 
 ##################################
 # auto enter main loop in main.py
-import main
-main.noipyBird()

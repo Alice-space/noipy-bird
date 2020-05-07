@@ -51,6 +51,7 @@ class noipyBird:
         pass
 
     def loop(self):
+        # main loop of lvgl
         def on_timer(timer):
             lv.tick_inc(5)
 
@@ -67,3 +68,6 @@ class noipyBird:
             lv.task_handler()
             while time.ticks_ms() - tim < 5:
                 pass
+
+
+noipyBird = noipyBird()
