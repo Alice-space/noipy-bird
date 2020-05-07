@@ -42,12 +42,8 @@ def welcomeGUI():
     label = lv.label(btn)
     label.set_text("Button")
     lv.scr_load(scr)
-    lv.task_create(testTask, 50, lv.TASK_PRIO_MID, 10)
+    # lv.task_create(testTask, 50, lv.TASK_PRIO.MID, 10)
     return loop()
-
-
-def testTask(task):
-    label.set_text(str(getVoiceFreq()))
 
 
 def main(self):
@@ -69,7 +65,7 @@ def deathGUI(self):
     pass
 
 
-def loop(self):
+def loop():
     # main loop of lvgl
     def on_timer(timer):
         lv.tick_inc(5)
