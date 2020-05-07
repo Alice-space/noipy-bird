@@ -1,8 +1,11 @@
+import lcd
 import lvgl as lv
 import lvgl_helper as lv_h
-import lcd
+from fpioa_manager import fm
 from machine import I2C
+from Maix import GPIO
 
+######################################
 # config options
 config_touchscreen_support = False
 board_m1n = False
@@ -47,10 +50,19 @@ lv.log_register_print_cb(
     lambda level, path, line, msg: print('%s(%d): %s' % (path, line, msg)))
 ##################################
 # initialize mic
-# TODO
-mic = I2S(I2S.DEVICE_0)   # 新建一个I2S对象，麦克风
-mic.channel_config(mic.CHANNEL_0, mic.RECEIVER, align_mode = I2S.STANDARD_MODE)  # 配置通道
-mic.set_sample_rate(38640)    # 采样率38640
+
+fm.register(20, fm.fpioa.I2S0_IN_D0, force=True)
+fm.register(30, fm.fpioa.I2S0_WS,
+            force=True)  # 19 on Go Board and Bit(new version)
+fm.register(32, fm.fpioa.I2S0_SCLK,
+            force=True)  # 18 on Go Board and Bit(new version)
+
+
+##################################
+# close WiFi
+fm.register(8, fm.fpioa.GPIO0, force=True)
+wifi_en = GPIO(GPIO.GPIO0, GPIO.OUT)
+wifi_en.value(0)
 
 ##################################
 # auto enter main loop in main.py
