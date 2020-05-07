@@ -49,6 +49,9 @@ lv.log_register_print_cb(
 ##################################
 # initialize mic
 # TODO
+mic = I2S(I2S.DEVICE_0)   # 新建一个I2S对象，麦克风
+mic.channel_config(mic.CHANNEL_0, mic.RECEIVER, align_mode = I2S.STANDARD_MODE)  # 配置通道
+mic.set_sample_rate(38640)    # 采样率38640
 
 ##################################
 # auto enter main loop in main.py
