@@ -45,7 +45,7 @@ def welcomeGUI():
     btn = lv.btn(scr)
     btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)
     label = lv.label(btn)
-    label.set_text("Button")
+    label.set_text("Play")
     lv.scr_load(scr)
     # lv.task_create(testTask, 50, lv.TASK_PRIO.MID, 10)
     return loop()
@@ -415,7 +415,12 @@ def flushPipe(self):
 
 
 def deathGUI(self):
-    pass
+    scr = lv.obj()
+    btn = lv.btn(scr)
+    btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)
+    label = lv.label(btn)
+    label.set_text("Game over")
+    lv.scr_load(scr)
 
 
 def loop():
