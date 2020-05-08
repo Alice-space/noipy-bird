@@ -32,11 +32,6 @@ lv.img.cache_set_size(2)
 
 ############################
 # per-load assest
-# the bird
-with open('img/bird.png', 'rb') as f:
-    png_data = f.read()
-
-bird_img = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
 
 # the pipe(barrier)
 with open('img/pipe_bottom.png', 'rb') as f:
@@ -77,7 +72,7 @@ def welcomeGUI():
     label.set_text("Play")
     lv.scr_load(scr)
     # lv.task_create(testTask, 50, lv.TASK_PRIO.MID, 10)
-    return loop()
+    return mainloop()
 
 
 def main():
@@ -85,22 +80,25 @@ def main():
     pass
 
 
-def flushBird():
+class Bird:
     # refresh bird on the screen
-    scr = lv.obj()
-    bird = lv.img(scr)
-    bird.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
-    bird.set_src(bird_img)
-    # not dragable for no touchscreen
-    # img1.set_drag(True)
+    def __init__(self, scr, x0=0, y0=0):
+        # the bird
+        with open('img/bird.png', 'rb') as f:
+            png_data = f.read()
+        bird_img = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+        self.bird = lv.img(scr)
+        self.bird.align(scr, lv.ALIGN.IN_LEFT_MID, x0, y0)
+        self.bird.set_src(bird_img)
+        # not dragable for no touchscreen
+        # img1.set_drag(True)
 
-    # Load the screen and display image
-    lv.scr_load(scr)
+    def set_pos(self, x, y):
+        self.bird.set_pos(x, y)
 
 
-def flushPipe():
+def flushPipe(scr):
     # refresh moving pipe
-    scr = lv.obj()
     # Create bottom pipe
     lv.img.cache_set_size(2)
     pipe_bottom = lv.img(scr)
@@ -114,9 +112,6 @@ def flushPipe():
     pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, 113, -50)  # 这里的横纵坐标表示下柱子的位置
     pipe_top.set_src(pipe_img_top)
 
-    # Load the screen and display image
-    lv.scr_load(scr)
-
 
 def deathGUI():
     scr = lv.obj()
@@ -128,7 +123,7 @@ def deathGUI():
 
 
 def regTimer():
-    # main loop of lvgl
+    # register timer
     def on_timer(timer):
         lv.tick_inc(5)
 
@@ -141,15 +136,26 @@ def regTimer():
           arg=None)
 
 
-def loop():
+def mainloop():
+    # main loop of game
+    scr = lv.obj()
+    bird = Bird(scr)
+    lv.scr_load(scr)
+    t = 0
     while True:
-        tim = time.ticks_ms()
         lv.task_handler()
+        tim = time.ticks_ms()
+        if t < 100:
+            bird.set_pos(0, 0)
+        elif t < 200:
+            bird.set_pos(20, 0)
+        elif t == 200:
+            t = 0
+        t += 1
         while time.ticks_ms() - tim < 5:
             pass
 
 
 regTimer()
 # welcomeGUI()
-flushBird()
-loop()
+mainloop()
