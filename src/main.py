@@ -5,6 +5,7 @@ import lvgl as lv
 from pngdecoder import get_png_info, open_png
 from machine import Timer
 from Maix import FFT, I2S
+from Maix import GPIO
 
 ############################
 # config record constant
@@ -31,7 +32,8 @@ decoder.open_cb = open_png
 lv.img.cache_set_size(2)
 
 ############################
-# per-load assest
+# register boot button
+button = GPIO(GPIO.GPIO1, GPIO.IN)
 
 # the pipe(barrier)
 with open('img/pipe_bottom.png', 'rb') as f:

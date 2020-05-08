@@ -1,6 +1,7 @@
 import lcd
 import lvgl as lv
 import lvgl_helper as lv_h
+from board import board_info
 from fpioa_manager import fm
 from machine import I2C
 from Maix import GPIO
@@ -57,12 +58,16 @@ fm.register(30, fm.fpioa.I2S0_WS,
 fm.register(32, fm.fpioa.I2S0_SCLK,
             force=True)  # 18 on Go Board and Bit(new version)
 
-
 ##################################
 # close WiFi
 fm.register(8, fm.fpioa.GPIO0, force=True)
 wifi_en = GPIO(GPIO.GPIO0, GPIO.OUT)
 wifi_en.value(0)
+
+##################################
+# boot key
+board_info = board_info()
+fm.register(board_info.BOOT_KEY, fm.fpioa.GPIO1)
 
 ##################################
 # auto enter main loop in main.py
