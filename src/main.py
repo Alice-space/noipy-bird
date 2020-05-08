@@ -99,20 +99,27 @@ class Bird:
         self.bird.set_pos(x, y)
 
 
-def flushPipe(scr):
-    # refresh moving pipe
-    # Create bottom pipe
-    lv.img.cache_set_size(2)
-    pipe_bottom = lv.img(scr)
-    pipe_bottom.align(scr, lv.ALIGN.IN_LEFT_MID, 113, 50)  # 这里的横纵坐标表示下柱子的位置
-    pipe_bottom.set_src(pipe_img_bottom)
-    # not dragable for no touchscreen
-    # pipe_down.set_drag(True)
+class Pipe:
+    # refresh pipe on the screen
+    def __init__(self, scr, x1=113, y1=50, x2=113, y2=-50):
+        # the pipe
+        with open('img/pipe_bottom.png', 'rb') as f:
+            png_data = f.read()
+        pipe_img_bottom = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+        self.pipe_bottom = lv.img(scr)
+        self.pipe_bottom.align(scr, lv.ALIGN.IN_LEFT_MID, x1, y1)
+        self.pipe_bottom.set_src(pipe_img_bottom)
 
-    # create top pipe
-    pipe_top = lv.img(scr)
-    pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, 113, -50)  # 这里的横纵坐标表示下柱子的位置
-    pipe_top.set_src(pipe_img_top)
+        with open('img/pipe_top.png', 'rb') as f:
+            png_data = f.read()
+        pipe_img_top = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+        self.pipe_top = lv.img(scr)
+        self.pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, x2, y2)
+        self.pipe_top.set_src(pipe_img_top)
+
+    def set_pos(self, x1, y1, x2, y2):
+        self.pipe_bottom.set_pos(x1, y1)
+        self.pipe_top.set_pos(x2, y2)
 
 
 def deathGUI():
