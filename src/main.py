@@ -2,7 +2,7 @@
 import time
 
 import lvgl as lv
-import pngdecoder
+from pngdecoder import get_png_info, open_png
 from machine import Timer
 from Maix import FFT, I2S
 
@@ -23,6 +23,12 @@ freq_lis = []
 # define color
 COLOR_SIZE = lv.color_t.SIZE
 COLOR_IS_SWAPPED = hasattr(lv.color_t().ch, 'green_h')
+# Register png image decoder
+decoder = lv.img.decoder_create()
+decoder.info_cb = get_png_info
+decoder.open_cb = open_png
+# cache size
+lv.img.cache_set_size(2)
 
 ############################
 # per-load assest
@@ -85,8 +91,6 @@ def flushBird():
     bird = lv.img(scr)
     bird.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
     bird.set_src(bird_img)
-    print(bird_img)
-    print('qwqwqwqw')
     # not dragable for no touchscreen
     # img1.set_drag(True)
 
@@ -123,19 +127,21 @@ def deathGUI():
     lv.scr_load(scr)
 
 
-def loop():
+def regTimer():
     # main loop of lvgl
     def on_timer(timer):
         lv.tick_inc(5)
 
-    timer = Timer(Timer.TIMER0,
-                  Timer.CHANNEL0,
-                  mode=Timer.MODE_PERIODIC,
-                  period=5,
-                  unit=Timer.UNIT_MS,
-                  callback=on_timer,
-                  arg=None)
+    Timer(Timer.TIMER0,
+          Timer.CHANNEL0,
+          mode=Timer.MODE_PERIODIC,
+          period=5,
+          unit=Timer.UNIT_MS,
+          callback=on_timer,
+          arg=None)
 
+
+def loop():
     while True:
         tim = time.ticks_ms()
         lv.task_handler()
@@ -143,6 +149,7 @@ def loop():
             pass
 
 
+regTimer()
 # welcomeGUI()
 flushBird()
 loop()

@@ -61,11 +61,3 @@ def open_png(decoder, dsc):
     lv_h.rgba8888_to_5658(img_view)
     dsc.img_data = img_data
     return lv.RES.OK
-
-
-# Register png image decoder
-decoder = lv.img.decoder_create()
-decoder.info_cb = get_png_info
-decoder.open_cb = open_png
-# cache size
-lv.img.cache_set_size(2)
