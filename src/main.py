@@ -16,19 +16,26 @@ mic.channel_config(mic.CHANNEL_0, mic.RECEIVER,
                    align_mode=I2S.STANDARD_MODE)  # 配置通道
 mic.set_sample_rate(38640)  # 采样率38640
 
+freq_lis = []
+
 
 def getVoiceFreq():
     # get avarange frequency of sound
     # return a num in [0,512)
+    global freq_lis
     audio = mic.record(sample_points)
     fft_res = FFT.run(audio.to_bytes(), fft_points)
     fft_amp = FFT.amplitude(fft_res)
     freq = fft_amp.index(max(fft_amp))
     fft_amp.clear()
-    return freq
+    if freq < 200:
+        if len(freq_lis) < 20:
+            freq_lis.append(freq)
+        else:
+            freq_lis.pop(0)
+            freq_lis.append(freq)
+    return sum(freq_lis) / len(freq_lis)
 
-
-global label
 
 
 def welcomeGUI():
@@ -69,6 +76,7 @@ def loop():
     # main loop of lvgl
     def on_timer(timer):
         lv.tick_inc(5)
+        print(getVoiceFreq())
 
     timer = Timer(Timer.TIMER0,
                   Timer.CHANNEL0,
