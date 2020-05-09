@@ -35,17 +35,6 @@ lv.img.cache_set_size(2)
 # register boot button
 button = GPIO(GPIO.GPIO1, GPIO.IN)
 
-# the pipe(barrier)
-with open('img/pipe_bottom.png', 'rb') as f:
-    png_data = f.read()
-
-pipe_img_bottom = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
-
-with open('img/pipe_top.png', 'rb') as f:
-    png_data = f.read()
-
-pipe_img_top = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
-
 
 def getVoiceFreq():
     # get avarange frequency of sound
@@ -73,13 +62,7 @@ def welcomeGUI():
     label = lv.label(btn)
     label.set_text("Play")
     lv.scr_load(scr)
-    # lv.task_create(testTask, 50, lv.TASK_PRIO.MID, 10)
     return mainloop()
-
-
-def main():
-    # main loop
-    pass
 
 
 class Bird:
@@ -105,14 +88,20 @@ class Pipe:
         # the pipe
         with open('img/pipe_bottom.png', 'rb') as f:
             png_data = f.read()
-        pipe_img_bottom = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+        pipe_img_bottom = lv.img_dsc_t({
+            'data_size': len(png_data),
+            'data': png_data
+        })
         self.pipe_bottom = lv.img(scr)
         self.pipe_bottom.align(scr, lv.ALIGN.IN_LEFT_MID, x1, y1)
         self.pipe_bottom.set_src(pipe_img_bottom)
 
         with open('img/pipe_top.png', 'rb') as f:
             png_data = f.read()
-        pipe_img_top = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+        pipe_img_top = lv.img_dsc_t({
+            'data_size': len(png_data),
+            'data': png_data
+        })
         self.pipe_top = lv.img(scr)
         self.pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, x2, y2)
         self.pipe_top.set_src(pipe_img_top)
@@ -149,22 +138,27 @@ def mainloop():
     # main loop of game
     scr = lv.obj()
     bird = Bird(scr)
+    pipe = Pipe(scr)
     lv.scr_load(scr)
     t = 0
+    gc.enable()
     while True:
         lv.task_handler()
         tim = time.ticks_ms()
         if t < 100:
             bird.set_pos(0, 0)
+            pipe.set_pos(0, 0, 0, 0)
         elif t < 200:
             bird.set_pos(20, 0)
+            pipe.set_pos(20, 0, 20, 0)
         elif t == 200:
             t = 0
         t += 1
+        gc.collect()
         while time.ticks_ms() - tim < 5:
             pass
 
 
 regTimer()
-# welcomeGUI()
+#welcomeGUI()
 mainloop()

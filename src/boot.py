@@ -66,7 +66,6 @@ wifi_en.value(0)
 
 ##################################
 # boot key
-board_info = board_info()
 fm.register(board_info.BOOT_KEY, fm.fpioa.GPIO1)
 
 ##################################
