@@ -43,15 +43,17 @@ def getVoiceFreq():
     audio = mic.record(sample_points)
     fft_res = FFT.run(audio.to_bytes(), fft_points)
     fft_amp = FFT.amplitude(fft_res)
-    freq = fft_amp.index(max(fft_amp))
+    ampl = max(fft_amp)
+    freq = fft_amp.index(ampl)
+    print(max(fft_amp))
     fft_amp.clear()
-    if freq < 200:
-        if len(freq_lis) < 20:
+    if freq < 200 and ampl > 10:
+        if len(freq_lis) < 5:
             freq_lis.append(freq)
         else:
             freq_lis.pop(0)
             freq_lis.append(freq)
-    return sum(freq_lis) / len(freq_lis)
+    return 0 if not freq_lis else sum(freq_lis) / len(freq_lis)
 
 
 def welcomeGUI():
@@ -73,7 +75,8 @@ def welcomeGUI():
     lv.scr_load(scr)
     while True:
         if button.value() == 0:
-            label.set_text("NICE")
+            btn.set_toggle(True)
+            return True
 
 
 class Bird:
@@ -86,8 +89,7 @@ class Bird:
         self.bird = lv.img(scr)
         self.bird.align(scr, lv.ALIGN.IN_LEFT_MID, x0, y0)
         self.bird.set_src(bird_img)
-        # not dragable for no touchscreen
-        # img1.set_drag(True)
+        self.bird.set_drag(True)
 
     def set_pos(self, x, y):
         self.bird.set_pos(x, y)
@@ -95,8 +97,9 @@ class Bird:
 
 class Pipe:
     # refresh pipe on the screen
-    def __init__(self, scr, x1=113, y1=50, x2=113, y2=-50):
+    def __init__(self, scr, x=113, y=50):
         # the pipe
+        # TODO only need one (x,y)
         with open('img/pipe_bottom.png', 'rb') as f:
             png_data = f.read()
         pipe_img_bottom = lv.img_dsc_t({
@@ -104,8 +107,9 @@ class Pipe:
             'data': png_data
         })
         self.pipe_bottom = lv.img(scr)
-        self.pipe_bottom.align(scr, lv.ALIGN.IN_LEFT_MID, x1, y1)
+        self.pipe_bottom.align(scr, lv.ALIGN.IN_LEFT_MID, x, y)
         self.pipe_bottom.set_src(pipe_img_bottom)
+        self.pipe_bottom.set_drag(True)
 
         with open('img/pipe_top.png', 'rb') as f:
             png_data = f.read()
@@ -114,12 +118,24 @@ class Pipe:
             'data': png_data
         })
         self.pipe_top = lv.img(scr)
-        self.pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, x2, y2)
+        self.pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, x, y)
         self.pipe_top.set_src(pipe_img_top)
+        self.pipe_top.set_drag(True)
 
-    def set_pos(self, x1, y1, x2, y2):
-        self.pipe_bottom.set_pos(x1, y1)
-        self.pipe_top.set_pos(x2, y2)
+    def set_pos(self, x, y):
+        # TODO only one (x,y) is enough
+        self.pipe_bottom.set_pos(x, y)
+        self.pipe_top.set_pos(x, y)
+
+    def flush_forward(self, delta_x):
+        self.set_pos(self.get_x() + delta_x, self.get_y())
+
+    def get_x(self):
+        return self.pipe_top.get_x()
+
+    def get_y(self):
+        # TODO offset
+        return self.pipe_top.get_y()
 
 
 def deathGUI():
@@ -152,5 +168,35 @@ def regTimer():
           arg=None)
 
 
+def collision_detect(bird_y):
+    # return true if collision
+    pass
+
+
+def mainloop():
+    scr = lv.obj()
+    bird = Bird(scr)
+    pipes = [Pipe(scr) for _ in range(6)]
+    lv.scr_load(scr)
+    while True:
+        # set bird
+        bird_y = int(getVoiceFreq() * 10)
+        bird.set_pos(0, bird_y)
+        # draw pipe
+        for pipe in pipes:
+            pipe.flush_forward(5)
+        # collision detect
+        # TODO need adjust
+        if pipes[0].get_x() < 5:
+            if collision_detect(bird_y):
+                return True
+        if pipes[0].get_x() < -5:
+            del pipes[0]
+            pipes.append(Pipe(scr, 113, 50))
+
+
 regTimer()
-welcomeGUI()
+while True:
+    welcomeGUI()
+    if mainloop():
+        deathGUI()
