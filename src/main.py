@@ -131,7 +131,7 @@ def deathGUI():
     sad_img.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
     sad_img.set_src(sad_img_dsc)
     btn = lv.btn(scr)
-    btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)
+    btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, -30)
     label = lv.label(btn)
     label.set_text("Game over")
     lv.scr_load(scr)
