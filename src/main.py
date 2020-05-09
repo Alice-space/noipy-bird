@@ -58,17 +58,22 @@ def welcomeGUI():
     # paint welcome guis
     with open('img/cute_bird.png', 'rb') as f:
         png_data = f.read()
-    cute_bird_img_dsc = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+    cute_bird_img_dsc = lv.img_dsc_t({
+        'data_size': len(png_data),
+        'data': png_data
+    })
     scr = lv.obj()
+    cute_bird_img = lv.img(scr)
+    cute_bird_img.align(scr, lv.ALIGN.CENTER, 0, 0)
+    cute_bird_img.set_src(cute_bird_img_dsc)
     btn = lv.btn(scr)
     btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)
-    cute_bird_img = lv.img(scr)
-    cute_bird_img.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
-    cute_bird_img.set_src(cute_bird_img_dsc)
     label = lv.label(btn)
     label.set_text("Play")
     lv.scr_load(scr)
-    return mainloop()
+    while True:
+        if button.value() == 0:
+            label.set_text("NICE")
 
 
 class Bird:
@@ -130,13 +135,13 @@ def deathGUI():
     label = lv.label(btn)
     label.set_text("Game over")
     lv.scr_load(scr)
-    return mainloop()
 
 
 def regTimer():
     # register timer
     def on_timer(timer):
         lv.tick_inc(5)
+        lv.task_handler()
 
     Timer(Timer.TIMER0,
           Timer.CHANNEL0,
@@ -147,31 +152,5 @@ def regTimer():
           arg=None)
 
 
-def mainloop():
-    # main loop of game
-    scr = lv.obj()
-    bird = Bird(scr)
-    pipe = Pipe(scr)
-    lv.scr_load(scr)
-    t = 0
-    gc.enable()
-    while True:
-        lv.task_handler()
-        tim = time.ticks_ms()
-        if t < 100:
-            bird.set_pos(0, 0)
-            pipe.set_pos(0, 0, 0, 0)
-        elif t < 200:
-            bird.set_pos(20, 0)
-            pipe.set_pos(20, 0, 20, 0)
-        elif t == 200:
-            t = 0
-        t += 1
-        gc.collect()
-        while time.ticks_ms() - tim < 5:
-            pass
-
-
 regTimer()
-#welcomeGUI()
-mainloop()
+welcomeGUI()
