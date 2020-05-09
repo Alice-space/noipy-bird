@@ -35,17 +35,6 @@ lv.img.cache_set_size(2)
 # register boot button
 button = GPIO(GPIO.GPIO1, GPIO.IN)
 
-# the pipe(barrier)
-with open('img/pipe_bottom.png', 'rb') as f:
-    png_data = f.read()
-
-pipe_img_bottom = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
-
-with open('img/pipe_top.png', 'rb') as f:
-    png_data = f.read()
-
-pipe_img_top = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
-
 
 def getVoiceFreq():
     # get avarange frequency of sound
@@ -67,9 +56,15 @@ def getVoiceFreq():
 
 def welcomeGUI():
     # paint welcome guis
+    with open('img/cute_bird.png', 'rb') as f:
+        png_data = f.read()
+    cute_bird_img_dsc = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
     scr = lv.obj()
     btn = lv.btn(scr)
     btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)
+    cute_bird_img = lv.img(scr)
+    cute_bird_img.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
+    cute_bird_img.set_src(cute_bird_img_dsc)
     label = lv.label(btn)
     label.set_text("Play")
     lv.scr_load(scr)
@@ -123,12 +118,19 @@ class Pipe:
 
 
 def deathGUI():
+    with open('img/sad.png', 'rb') as f:
+        png_data = f.read()
+    sad_img_dsc = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
     scr = lv.obj()
     btn = lv.btn(scr)
     btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)
+    sad_img = lv.img(scr)
+    sad_img.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
+    sad_img.set_src(sad_img_dsc)
     label = lv.label(btn)
     label.set_text("Game over")
     lv.scr_load(scr)
+    return mainloop()
 
 
 def regTimer():
