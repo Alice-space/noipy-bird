@@ -56,9 +56,15 @@ def getVoiceFreq():
 
 def welcomeGUI():
     # paint welcome guis
+    with open('img/cute_bird.png', 'rb') as f:
+        png_data = f.read()
+    cute_bird_img_dsc = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
     scr = lv.obj()
     btn = lv.btn(scr)
     btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)
+    cute_bird_img = lv.img(scr)
+    cute_bird_img.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
+    cute_bird_img.set_src(cute_bird_img_dsc)
     label = lv.label(btn)
     label.set_text("Play")
     lv.scr_load(scr)
@@ -112,12 +118,19 @@ class Pipe:
 
 
 def deathGUI():
+    with open('img/sad.png', 'rb') as f:
+        png_data = f.read()
+    sad_img_dsc = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
     scr = lv.obj()
     btn = lv.btn(scr)
     btn.align(lv.scr_act(), lv.ALIGN.CENTER, 0, 0)
+    sad_img = lv.img(scr)
+    sad_img.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
+    sad_img.set_src(sad_img_dsc)
     label = lv.label(btn)
     label.set_text("Game over")
     lv.scr_load(scr)
+    return mainloop()
 
 
 def regTimer():
