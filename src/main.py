@@ -167,7 +167,7 @@ def regTimer():
 
 def collision_detect(bird_y, y):
     # return true if collision
-    if bird_y > y or bird_y < (y - 50):
+    if bird_y > (y+40) or bird_y < (y - 100):
         return True
     else:
         return False
@@ -176,26 +176,28 @@ def collision_detect(bird_y, y):
 def mainloop():
     scr = lv.obj()
     bird = Bird(scr)
-    pipes = [Pipe(scr, x=600 - i * 100, y=i * 10) for i in range(6)]
+    pipes = [Pipe(scr, x=600 - i * 150, y=lstHeight[i]) for i in range(6)]
     lv.scr_load(scr)
+    j = 6
     while True:
         # set bird
         bird_y = int(getVoiceFreq() * 10)
         bird.set_pos(5, bird_y)
         # draw pipe
         for pipe in pipes:
-            pipe.flush_forward(-2)
+            pipe.flush_forward(-1)
         # collision detect
         # TODO need adjust
-        if pipes[-1].get_x() < 15:
+        if pipes[-1].get_x() == 10:
             if collision_detect(bird_y, pipes[-1].get_y()):
                 return True
         if pipes[-1].get_x() < 0:
             pipe = pipes.pop(-1)
-            pipe.set_pos(600, 50)
+            pipe.set_pos(900, lstHeight[j])
+            j = j + 1
             pipes.insert(0, pipe)
 
-
+lstHeight = [10, 40, 30, 35, 15, 45, 100, 120, 100, 105, 115, 105, 100, 120, 95, 105, 90, 120, 125, 120, 95, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90]
 regTimer()
 while True:
     welcomeGUI()
