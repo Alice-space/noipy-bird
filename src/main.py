@@ -186,7 +186,6 @@ def mainloop():
         for pipe in pipes:
             pipe.flush_forward(-2)
         # collision detect
-        # TODO need adjust
         if pipes[-1].get_x() < 15:
             if collision_detect(bird_y, pipes[-1].get_y()):
                 return True
@@ -201,4 +200,4 @@ while True:
     welcomeGUI()
     if mainloop():
         deathGUI()
-        utime.sleep_ms(800)
+        utime.sleep_ms(700)
