@@ -81,7 +81,7 @@ def welcomeGUI():
 
 class Bird:
     # refresh bird on the screen
-    def __init__(self, scr, x0=0, y0=0):
+    def __init__(self, scr, x0=5, y0=0):
         # the bird
         with open('img/bird.png', 'rb') as f:
             png_data = f.read()
@@ -97,7 +97,7 @@ class Bird:
 
 class Pipe:
     # refresh pipe on the screen
-    def __init__(self, scr, x=113, y=50):
+    def __init__(self, scr, x=200, y=50):
         # the pipe
         # TODO only need one (x,y)
         with open('img/pipe_bottom.png', 'rb') as f:
@@ -118,24 +118,24 @@ class Pipe:
             'data': png_data
         })
         self.pipe_top = lv.img(scr)
-        self.pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, x, y)
+        self.pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, x, y-200)
         self.pipe_top.set_src(pipe_img_top)
         self.pipe_top.set_drag(True)
 
     def set_pos(self, x, y):
         # TODO only one (x,y) is enough
         self.pipe_bottom.set_pos(x, y)
-        self.pipe_top.set_pos(x, y)
+        self.pipe_top.set_pos(x, y-200)
 
     def flush_forward(self, delta_x):
         self.set_pos(self.get_x() + delta_x, self.get_y())
 
     def get_x(self):
-        return self.pipe_top.get_x()
+        return self.pipe_bottom.get_x()
 
     def get_y(self):
         # TODO offset
-        return self.pipe_top.get_y()
+        return self.pipe_bottom.get_y()
 
 
 def deathGUI():
@@ -168,15 +168,18 @@ def regTimer():
           arg=None)
 
 
-def collision_detect(bird_y):
+def collision_detect(bird_y, y):
     # return true if collision
-    pass
+    if bird_y > y or bird_y < y-50:
+        return True
+    else:
+        return False
 
 
 def mainloop():
     scr = lv.obj()
     bird = Bird(scr)
-    pipes = [Pipe(scr) for _ in range(6)]
+    pipes = [Pipe(scr, x=300-_*50, y=50) for _ in range(6)]
     lv.scr_load(scr)
     while True:
         # set bird
@@ -187,12 +190,12 @@ def mainloop():
             pipe.flush_forward(5)
         # collision detect
         # TODO need adjust
-        if pipes[0].get_x() < 5:
-            if collision_detect(bird_y):
+        if pipes[0].get_x() < 15:
+            if collision_detect(bird_y, pipes[0].get_y):
                 return True
-        if pipes[0].get_x() < -5:
+        if pipes[0].get_x() < 0:
             del pipes[0]
-            pipes.append(Pipe(scr, 113, 50))
+            pipes.append(Pipe(scr, x=300, y=50))
 
 
 regTimer()
