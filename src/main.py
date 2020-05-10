@@ -1,11 +1,9 @@
 # game main loop
-import time
-
 import lvgl as lv
-from pngdecoder import get_png_info, open_png
+import utime
 from machine import Timer
-from Maix import FFT, I2S
-from Maix import GPIO
+from Maix import FFT, GPIO, I2S
+from pngdecoder import get_png_info, open_png
 
 ############################
 # config record constant
@@ -30,6 +28,28 @@ decoder.info_cb = get_png_info
 decoder.open_cb = open_png
 # cache size
 lv.img.cache_set_size(10)
+# img load
+with open('img/bird.png', 'rb') as f:
+    png_data = f.read()
+bird_img = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+
+with open('img/pipe_bottom.png', 'rb') as f:
+    png_data = f.read()
+pipe_img_bottom = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+
+with open('img/pipe_top.png', 'rb') as f:
+    png_data = f.read()
+pipe_img_top = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+
+with open('img/cute_bird.png', 'rb') as f:
+    png_data = f.read()
+cute_bird_img_dsc = lv.img_dsc_t({
+    'data_size': len(png_data),
+    'data': png_data
+})
+with open('img/sad.png', 'rb') as f:
+    png_data = f.read()
+sad_img_dsc = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
 
 ############################
 # register boot button
@@ -45,7 +65,6 @@ def getVoiceFreq():
     fft_amp = FFT.amplitude(fft_res)
     ampl = max(fft_amp)
     freq = fft_amp.index(ampl)
-    print(max(fft_amp))
     fft_amp.clear()
     if freq < 200 and ampl > 10:
         if len(freq_lis) < 5:
@@ -58,12 +77,6 @@ def getVoiceFreq():
 
 def welcomeGUI():
     # paint welcome guis
-    with open('img/cute_bird.png', 'rb') as f:
-        png_data = f.read()
-    cute_bird_img_dsc = lv.img_dsc_t({
-        'data_size': len(png_data),
-        'data': png_data
-    })
     scr = lv.obj()
     cute_bird_img = lv.img(scr)
     cute_bird_img.align(scr, lv.ALIGN.CENTER, 0, 0)
@@ -83,9 +96,6 @@ class Bird:
     # refresh bird on the screen
     def __init__(self, scr, x0=5, y0=0):
         # the bird
-        with open('img/bird.png', 'rb') as f:
-            png_data = f.read()
-        bird_img = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
         self.bird = lv.img(scr)
         self.bird.align(scr, lv.ALIGN.IN_LEFT_MID, x0, y0)
         self.bird.set_src(bird_img)
@@ -99,51 +109,32 @@ class Pipe:
     # refresh pipe on the screen
     def __init__(self, scr, x=300, y=50):
         # the pipe
-        # TODO only need one (x,y)
-        with open('img/pipe_bottom.png', 'rb') as f:
-            png_data = f.read()
-        pipe_img_bottom = lv.img_dsc_t({
-            'data_size': len(png_data),
-            'data': png_data
-        })
         self.pipe_bottom = lv.img(scr)
         self.pipe_bottom.align(scr, lv.ALIGN.IN_LEFT_MID, x, y)
         self.pipe_bottom.set_src(pipe_img_bottom)
         self.pipe_bottom.set_drag(True)
 
-        with open('img/pipe_top.png', 'rb') as f:
-            png_data = f.read()
-        pipe_img_top = lv.img_dsc_t({
-            'data_size': len(png_data),
-            'data': png_data
-        })
         self.pipe_top = lv.img(scr)
-        self.pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, x, y-200)
+        self.pipe_top.align(scr, lv.ALIGN.IN_LEFT_MID, x, y - 400)
         self.pipe_top.set_src(pipe_img_top)
         self.pipe_top.set_drag(True)
 
     def set_pos(self, x, y):
-        # TODO only one (x,y) is enough
         self.pipe_bottom.set_pos(x, y)
-        self.pipe_top.set_pos(x, y-200)
+        self.pipe_top.set_pos(x, y - 400)
 
     def flush_forward(self, delta_x):
         self.set_pos(self.get_x() + delta_x, self.get_y())
 
     def get_x(self):
-        X = int(self.pipe_bottom.get_x())
-        return X
+        return int(self.pipe_bottom.get_x())
 
     def get_y(self):
-        # TODO offset
-        Y = int(self.pipe_bottom.get_y())
-        return Y
+        return int(self.pipe_bottom.get_y())
 
 
 def deathGUI():
-    with open('img/sad.png', 'rb') as f:
-        png_data = f.read()
-    sad_img_dsc = lv.img_dsc_t({'data_size': len(png_data), 'data': png_data})
+    # GUI when died
     scr = lv.obj()
     sad_img = lv.img(scr)
     sad_img.align(scr, lv.ALIGN.IN_LEFT_MID, 0, 0)
@@ -176,7 +167,7 @@ def regTimer():
 
 def collision_detect(bird_y, y):
     # return true if collision
-    if bird_y > y or bird_y < (y-50):
+    if bird_y > y or bird_y < (y - 50):
         return True
     else:
         return False
@@ -185,7 +176,7 @@ def collision_detect(bird_y, y):
 def mainloop():
     scr = lv.obj()
     bird = Bird(scr)
-    pipes = [Pipe(scr, x=600-_*100, y=50) for _ in range(6)]
+    pipes = [Pipe(scr, x=600 - i * 100, y=i * 10) for i in range(6)]
     lv.scr_load(scr)
     while True:
         # set bird
@@ -196,12 +187,13 @@ def mainloop():
             pipe.flush_forward(-2)
         # collision detect
         # TODO need adjust
-        if pipes[0].get_x() < 15:
-            if collision_detect(bird_y, pipes[0].get_y()):
+        if pipes[-1].get_x() < 15:
+            if collision_detect(bird_y, pipes[-1].get_y()):
                 return True
-        if pipes[0].get_x() < 0:
-            del pipes[0]
-            pipes.append(Pipe(scr, x=600, y=50))
+        if pipes[-1].get_x() < 0:
+            pipe = pipes.pop(-1)
+            pipe.set_pos(600, 50)
+            pipes.insert(0, pipe)
 
 
 regTimer()
@@ -209,3 +201,4 @@ while True:
     welcomeGUI()
     if mainloop():
         deathGUI()
+        utime.sleep_ms(800)
