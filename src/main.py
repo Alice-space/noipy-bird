@@ -97,7 +97,7 @@ class Bird:
 
 class Pipe:
     # refresh pipe on the screen
-    def __init__(self, scr, x=200, y=50):
+    def __init__(self, scr, x=300, y=50):
         # the pipe
         # TODO only need one (x,y)
         with open('img/pipe_bottom.png', 'rb') as f:
@@ -179,12 +179,12 @@ def collision_detect(bird_y, y):
 def mainloop():
     scr = lv.obj()
     bird = Bird(scr)
-    pipes = [Pipe(scr, x=300-_*50, y=50) for _ in range(6)]
+    pipes = [Pipe(scr, x=300-_*100, y=50) for _ in range(3)]
     lv.scr_load(scr)
     while True:
         # set bird
         bird_y = int(getVoiceFreq() * 10)
-        bird.set_pos(0, bird_y)
+        bird.set_pos(5, bird_y)
         # draw pipe
         for pipe in pipes:
             pipe.flush_forward(-2)
