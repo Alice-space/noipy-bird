@@ -187,7 +187,7 @@ def mainloop():
         bird.set_pos(0, bird_y)
         # draw pipe
         for pipe in pipes:
-            pipe.flush_forward(5)
+            pipe.flush_forward(-2)
         # collision detect
         # TODO need adjust
         if pipes[0].get_x() < 15:
