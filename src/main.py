@@ -29,7 +29,7 @@ decoder = lv.img.decoder_create()
 decoder.info_cb = get_png_info
 decoder.open_cb = open_png
 # cache size
-lv.img.cache_set_size(2)
+lv.img.cache_set_size(10)
 
 ############################
 # register boot button
@@ -131,11 +131,13 @@ class Pipe:
         self.set_pos(self.get_x() + delta_x, self.get_y())
 
     def get_x(self):
-        return self.pipe_bottom.get_x()
+        X = int(self.pipe_bottom.get_x())
+        return X
 
     def get_y(self):
         # TODO offset
-        return self.pipe_bottom.get_y()
+        Y = int(self.pipe_bottom.get_y())
+        return Y
 
 
 def deathGUI():
@@ -151,6 +153,10 @@ def deathGUI():
     label = lv.label(btn)
     label.set_text("Game over")
     lv.scr_load(scr)
+    while True:
+        if button.value() == 0:
+            btn.set_toggle(True)
+            return True
 
 
 def regTimer():
@@ -170,7 +176,7 @@ def regTimer():
 
 def collision_detect(bird_y, y):
     # return true if collision
-    if bird_y > y or bird_y < y-50:
+    if bird_y > y or bird_y < (y-50):
         return True
     else:
         return False
@@ -179,7 +185,7 @@ def collision_detect(bird_y, y):
 def mainloop():
     scr = lv.obj()
     bird = Bird(scr)
-    pipes = [Pipe(scr, x=300-_*100, y=50) for _ in range(3)]
+    pipes = [Pipe(scr, x=600-_*100, y=50) for _ in range(6)]
     lv.scr_load(scr)
     while True:
         # set bird
@@ -191,11 +197,11 @@ def mainloop():
         # collision detect
         # TODO need adjust
         if pipes[0].get_x() < 15:
-            if collision_detect(bird_y, pipes[0].get_y):
+            if collision_detect(bird_y, pipes[0].get_y()):
                 return True
         if pipes[0].get_x() < 0:
             del pipes[0]
-            pipes.append(Pipe(scr, x=300, y=50))
+            pipes.append(Pipe(scr, x=600, y=50))
 
 
 regTimer()
