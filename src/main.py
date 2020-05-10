@@ -167,13 +167,14 @@ def regTimer():
 
 def collision_detect(bird_y, y):
     # return true if collision
-    if bird_y > (y+40) or bird_y < (y - 100):
+    if bird_y > (y + 40) or bird_y < (y - 100):
         return True
     else:
         return False
 
 
 def mainloop():
+    # main loop of the game
     scr = lv.obj()
     bird = Bird(scr)
     pipes = [Pipe(scr, x=600 - i * 150, y=lstHeight[i]) for i in range(6)]
@@ -197,7 +198,9 @@ def mainloop():
             j = j + 1
             pipes.insert(0, pipe)
 
-lstHeight = [10, 40, 30, 35, 15, 45, 100, 120, 100, 105, 115, 105, 100, 120, 95, 105, 90, 120, 125, 120, 95, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90]
+
+with open('lstHeight.txt', 'r') as f:
+    lstHeight = eval(f.read())
 regTimer()
 while True:
     welcomeGUI()
